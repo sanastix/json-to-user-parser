@@ -1,38 +1,60 @@
 package org.example;
 
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
+import org.junit.jupiter.api.Test;
 
-/**
- * Unit test for simple App.
- */
-public class AppTest 
-    extends TestCase
-{
-    /**
-     * Create the test case
-     *
-     * @param testName name of the test case
-     */
-    public AppTest( String testName )
-    {
-        super( testName );
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+public class AppTest {
+
+    @Test
+    void testReadFromStringToUser() {
+        String rawString = """
+                {
+                  "name": "Serhii",
+                  "year": 30,
+                  "isAdmin": false
+                }
+                """;
+
+        User expectedUser = new User("Serhii", 30, false);
+        User actualUser = MyMapper.readFromString(rawString, User.class);
+
+        assertEquals(expectedUser.getName(), actualUser.getName());
+        assertEquals(expectedUser.getYear(), actualUser.getYear());
+        assertEquals(expectedUser.isAdmin(), actualUser.isAdmin());
     }
 
-    /**
-     * @return the suite of tests being tested
-     */
-    public static Test suite()
-    {
-        return new TestSuite( AppTest.class );
+    @Test
+    void testInvalidField() {
+        String rawString = """
+                {
+                  "name": "Serhii",
+                  "year": "invalid_number",
+                  "isAdmin": false
+                }
+                """;
+
+        assertThrows(NumberFormatException.class, () -> MyMapper.readFromString(rawString, User.class));
     }
 
-    /**
-     * Rigourous Test :-)
-     */
-    public void testApp()
-    {
-        assertTrue( true );
+    @Test
+    void testUnknownField() {
+        String rawString = """
+                {
+                  "name": "Serhii",
+                  "year": 30,
+                  "isAdmin": false,
+                  "unknownField": "test"
+                }
+                """;
+
+        User actualUser = MyMapper.readFromString(rawString, User.class);
+
+        assertEquals("Serhii", actualUser.getName());
+        assertEquals(30, actualUser.getYear());
+        assertFalse(actualUser.isAdmin());
     }
+
 }
