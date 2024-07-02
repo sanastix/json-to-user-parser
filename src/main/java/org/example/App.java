@@ -1,8 +1,9 @@
 package org.example;
 
-public class App 
+public class App
 {
-    public static void main( String[] args ) {
+    public static void main( String[] args )
+    {
         String rawString = """
                 {
                   "name": "Serhii",
@@ -10,7 +11,9 @@ public class App
                   "isAdmin": false
                 }
                                 """;
-        User user = SanaMapper.readFromString(rawString, User.class);
-        System.out.println(user);
+
+        User user = MyMapper.readFromString(rawString, User.class);
+        System.out.println(user.toString());
     }
+
 }
